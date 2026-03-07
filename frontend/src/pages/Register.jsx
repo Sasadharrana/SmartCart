@@ -60,12 +60,6 @@ function Register() {
 
         {error && <p className="text-red-500 mb-2">{error}</p>}
 
-        <input
-          type="text"
-          placeholder="Name"
-          className="w-full mb-3 p-2 border rounded"
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
 
         <input
           type="email"
