@@ -13,6 +13,7 @@ function Register() {
   });
 
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -60,7 +61,6 @@ function Register() {
 
         {error && <p className="text-red-500 mb-2">{error}</p>}
 
-
         <input
           type="email"
           placeholder="Email"
@@ -68,12 +68,22 @@ function Register() {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full mb-3 p-2 border rounded"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="w-full mb-3 p-2 border rounded"
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
+
+          <button
+            type="button"
+            className="absolute right-3 top-2 text-sm"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
 
         <select
           className="w-full mb-3 p-2 border rounded"

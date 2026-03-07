@@ -132,7 +132,7 @@ export default function Login() {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-2 cursor-pointer text-gray-600"
           >
-            {showPassword ? "🔏" : "👁"}
+            {showPassword ? "Hide" : "Show"}
           </span>
         </div>
 
