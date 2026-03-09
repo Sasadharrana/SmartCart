@@ -4,7 +4,7 @@ The SmartCart frontend is built using **React** and communicates with the FastAP
 
 ---
 
-## 🧰 Technologies
+## Technologies
 
 * React
 * React Router
@@ -13,7 +13,7 @@ The SmartCart frontend is built using **React** and communicates with the FastAP
 
 ---
 
-## 📂 Frontend Structure
+## Frontend Structure
 
 ```
 frontend
@@ -39,7 +39,7 @@ frontend
 
 ---
 
-## ⚙️ Setup
+## Setup
 
 Navigate to frontend folder:
 
@@ -67,7 +67,7 @@ http://localhost:5173
 
 ---
 
-## 🌐 API Communication
+## API Communication
 
 Frontend communicates with backend APIs using **Axios**.
 
@@ -82,7 +82,7 @@ Example API calls:
 
 ---
 
-## 🖥 UI Pages
+## UI Pages
 
 * Login Page
 * Register Page
@@ -95,7 +95,7 @@ Example API calls:
 
 ---
 
-## 🔗 Backend Integration
+## Backend Integration
 
 Backend API base URL:
 

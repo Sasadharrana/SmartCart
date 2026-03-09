@@ -4,7 +4,7 @@ The backend of SmartCart is built using **FastAPI**, providing REST APIs for aut
 
 ---
 
-## 🧰 Technologies
+## Technologies
 
 * FastAPI
 * SQLAlchemy
@@ -14,7 +14,7 @@ The backend of SmartCart is built using **FastAPI**, providing REST APIs for aut
 
 ---
 
-## 📂 Backend Structure
+## Backend Structure
 
 ```
 backend
@@ -40,7 +40,7 @@ backend
 
 ---
 
-## ⚙️ Setup
+## Setup
 
 ### Clone Repository
 
@@ -81,7 +81,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 Create a `.env` file:
 
@@ -94,7 +94,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 ---
 
-## ▶️ Run Server
+##  Run Server
 
 ```
 uvicorn app.main:app --reload
@@ -114,7 +114,7 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## 🔑 Authentication
+## Authentication
 
 * Password hashing using bcrypt
 * JWT access tokens
@@ -122,7 +122,7 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## 📡 Main API Modules
+## Main API Modules
 
 * Auth
 * Products

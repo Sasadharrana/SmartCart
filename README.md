@@ -1,4 +1,4 @@
-# 🛒 SmartCart – Full Stack E-Commerce Platform
+# SmartCart – Full Stack E-Commerce Platform
 
 SmartCart is a full-stack e-commerce application built using **FastAPI (backend)** and **React (frontend)**.
 It allows users to browse products, manage carts, place orders, process payments, and review products.
@@ -7,9 +7,9 @@ This project demonstrates a complete **modern web application architecture** inc
 
 ---
 
-## 🚀 Features
+## Features
 
-### 👤 Buyer
+### Buyer
 
 * Register and login
 * Browse products
@@ -21,13 +21,13 @@ This project demonstrates a complete **modern web application architecture** inc
 * View order history
 * Write product reviews
 
-### 🛍 Seller
+### Seller
 
 * Add new products
 * Manage product inventory
 * Upload product images
 
-### 🛠 Admin
+### Admin
 
 * Manage platform users
 * Manage products
@@ -36,7 +36,7 @@ This project demonstrates a complete **modern web application architecture** inc
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 ### Backend
 
@@ -56,7 +56,7 @@ This project demonstrates a complete **modern web application architecture** inc
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 SmartCart
@@ -85,7 +85,7 @@ SmartCart
 
 ---
 
-## 🗄 Database Design
+## Database Design
 
 Main tables used in SmartCart:
 
@@ -108,7 +108,7 @@ Main tables used in SmartCart:
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
 SmartCart uses **JWT-based authentication**.
 
@@ -118,7 +118,7 @@ SmartCart uses **JWT-based authentication**.
 
 ---
 
-## ▶️ Running the Project
+##  Running the Project
 
 See setup instructions in:
 
@@ -131,9 +131,8 @@ See setup instructions in:
 
 **Sasadhar Rana**
 
-* Email: [sasadharrana8252@gmail.com](mailto:sasadharrana8252@gmail.com)
-* LinkedIn: (add your LinkedIn link)
+* Email: [sasadharrana825@gmail.com](mailto:sasadharrana825@gmail.com)
 
 ---
 
-⭐ If you like this project, consider giving it a star!
+
