@@ -132,13 +132,23 @@ def delete_product(
 
 @router.get("/seller", response_model=list[ProductOut])
 def get_seller_products(
+    page: int = Query(1, ge=1),
+    limit: int = Query(5, ge=1),
     db: Session = Depends(get_db),
     seller = Depends(seller_only)
 ):
-    return db.query(Product).filter(
-        Product.seller_id == seller.id
-    ).all()
+    offset = (page - 1) * limit
 
+    products = (
+        db.query(Product)
+        .filter(Product.seller_id == seller.id)
+        .order_by(Product.id.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return products
 
 # ================= SELLER STATS =================
 

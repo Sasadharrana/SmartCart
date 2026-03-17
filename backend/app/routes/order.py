@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func,extract
 from app.database import get_db
 from app.models.cart import Cart
 from app.models.order import Order
@@ -158,3 +159,38 @@ def order_history(
         })
 
     return response
+
+
+@router.get("/analytics/revenue/monthly")
+def monthly_revenue(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    results = (
+        db.query(
+            extract('month', Order.created_at).label("month"),
+            func.sum(OrderItem.price * OrderItem.quantity).label("revenue")
+        )
+        .join(OrderItem, Order.id == OrderItem.order_id)
+        .filter(Order.status == "PAID",Order.created_at != None)
+        .group_by("month")
+        .order_by("month")
+        .all()
+    )
+
+    months_map = {
+        1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr",
+        5: "May", 6: "Jun", 7: "Jul", 8: "Aug",
+        9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"
+    }
+
+    data = []
+
+    for i in range(1, 13):
+        found = next((r for r in results if int(r.month) == i), None)
+        data.append({
+            "month": months_map[i],
+            "revenue": float(found.revenue) if found else 0
+        })
+
+    return data
