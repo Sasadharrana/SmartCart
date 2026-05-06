@@ -3,6 +3,22 @@ import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+// 🔥 ADDED: Razorpay Integration — Load Razorpay script dynamically
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (document.getElementById("razorpay-script")) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.id = "razorpay-script";
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export default function BuyerDashboard() {
   const navigate = useNavigate();
 
@@ -17,7 +33,7 @@ export default function BuyerDashboard() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // 🔥 FILTER STATES (NEW)
+  // 🔥 FILTER STATES
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState("");
@@ -27,10 +43,13 @@ export default function BuyerDashboard() {
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(5);
 
+  // 🔥 ADDED: Razorpay Integration — Track which order is being paid
+  const [payingOrderId, setPayingOrderId] = useState(null);
+
   // ⭐ STAR RENDER
   const renderStars = (value) => (
     <div className="flex text-yellow-400">
-      {[1,2,3,4,5].map((star) => (
+      {[1, 2, 3, 4, 5].map((star) => (
         <span key={star}>{star <= value ? "★" : "☆"}</span>
       ))}
     </div>
@@ -69,7 +88,6 @@ export default function BuyerDashboard() {
       );
 
       setPage(res.data?.page || 1);
-
     } catch {
       setProducts([]);
       setFilteredProducts([]);
@@ -136,6 +154,89 @@ export default function BuyerDashboard() {
     }
   };
 
+  // 🔥 UPDATED: Payment Logic — Calls /payment/create then opens Razorpay popup
+  const handleProceedToPay = async (orderId) => {
+    try {
+      setPayingOrderId(orderId);
+
+      // Step 1: Load Razorpay SDK script dynamically if not already loaded
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        toast.error("Failed to load Razorpay. Check your connection.");
+        setPayingOrderId(null);
+        return;
+      }
+
+      // Step 2: Call backend to create Razorpay order
+      // 🔥 UPDATED: Payment Logic — correctly calls /payment/create/{orderId}
+      const res = await API.post(`/payment/create/${orderId}`);
+      const paymentData = res.data;
+
+      // Step 3: Guard — stop if backend did not return razorpay_order_id
+      if (!paymentData || !paymentData.razorpay_order_id) {
+        toast.error("Payment initiation failed. Please try again.");
+        setPayingOrderId(null);
+        return;
+      }
+
+      // Step 4: Configure Razorpay options using returned backend data
+      const options = {
+        key: paymentData.key,                        // Razorpay Key ID from backend
+        amount: paymentData.amount,                  // Amount in paise
+        currency: paymentData.currency || "INR",
+        name: paymentData.name || "SmartCart",
+        description: paymentData.description || `Order #${orderId}`,
+        order_id: paymentData.razorpay_order_id,     // Razorpay order ID from backend
+
+        // Step 5: Success handler — fires ONLY after successful payment
+        handler: async function (response) {
+          try {
+            // Step 6: Verify payment with backend AFTER Razorpay success
+            await API.post(`/payment/verify/${orderId}`, {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            toast.success("Payment successful! 🎉");
+            fetchOrders(); // Step 7: Refresh orders to reflect updated status
+          } catch {
+            toast.error("Payment verification failed. Contact support.");
+          } finally {
+            setPayingOrderId(null);
+          }
+        },
+
+        // Fires when user closes Razorpay popup without paying
+        modal: {
+          ondismiss: function () {
+            toast.error("Payment cancelled.");
+            setPayingOrderId(null);
+          },
+        },
+
+        // Pre-fill user details if provided by backend
+        prefill: {
+          name: paymentData.prefill?.name || "",
+          email: paymentData.prefill?.email || "",
+          contact: paymentData.prefill?.contact || "",
+        },
+
+        theme: {
+          color: "#2563eb",
+        },
+      };
+
+      // Step 8: Open Razorpay popup — this is what shows the payment UI
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch {
+      toast.error("Failed to initiate payment. Please try again.");
+      setPayingOrderId(null);
+    }
+  };
+
   // SEARCH
   useEffect(() => {
     const filtered = products.filter((product) =>
@@ -195,7 +296,7 @@ export default function BuyerDashboard() {
         </div>
       </div>
 
-      {/* 🔥 FILTER SECTION (NEW) */}
+      {/* 🔥 FILTER SECTION */}
       {view === "products" && (
         <div className="p-6 bg-[#1e293b] flex gap-4 flex-wrap">
 
@@ -311,11 +412,28 @@ export default function BuyerDashboard() {
           ) : (
             orders.map((order) => (
               <div key={order.order_id} className="bg-[#1e293b] p-6 rounded mb-4">
+
                 <div className="flex justify-between">
                   <span>Order #{order.order_id}</span>
                   <span className="text-green-400">{order.status}</span>
                 </div>
+
                 <p>Total: ₹{order.total_amount}</p>
+
+                {/* 🔥 UPDATED: Payment Logic — Proceed to Pay (only for PLACED orders) */}
+                {order.status === "PLACED" && (
+                  <button
+                    onClick={() => handleProceedToPay(order.order_id)}
+                    disabled={payingOrderId === order.order_id}
+                    className="mt-4 px-6 py-2 bg-gradient-to-r from-[#16a34a] to-[#15803d] rounded text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {payingOrderId === order.order_id
+                      ? "Processing..."
+                      : "Proceed to Pay 💳"}
+                  </button>
+                )}
+                {/* 🔥 END: Payment Logic */}
+
               </div>
             ))
           )}

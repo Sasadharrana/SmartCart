@@ -84,13 +84,49 @@ export default function Cart() {
     }
   };
 
+  // 🔥 UPDATED: Razorpay Payment Integration
   const proceedToPayment = async () => {
     try {
-      await API.post(`/orders/${orderId}/pay`);
-      toast.success("Payment successful 💳");
-      setOrderId(null);
+      // Step 1: Create Razorpay order
+      const res = await API.post(`/payment/create/${orderId}`);
+      const data = res.data;
+
+      // Step 2: Configure Razorpay
+      const options = {
+        key: data.key,
+        amount: data.razorpay_amount,
+        currency: data.currency,
+        order_id: data.razorpay_order_id,
+
+        handler: async function (response) {
+          try {
+            // Step 3: Verify payment
+            await API.post(`/payment/verify/${orderId}`, {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            toast.success("Payment successful 💳");
+            setOrderId(null);
+          } catch {
+            toast.error("Payment verification failed");
+          }
+        },
+
+        modal: {
+          ondismiss: function () {
+            toast.error("Payment cancelled");
+          },
+        },
+      };
+
+      // Step 4: Open Razorpay popup
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Payment failed");
+      toast.error("Failed to initiate payment");
     }
   };
 
@@ -118,9 +154,7 @@ export default function Cart() {
                   />
 
                   <div>
-                    <p className="font-semibold">
-                      {item.product_name}
-                    </p>
+                    <p className="font-semibold">{item.product_name}</p>
                     <p>Price: ₹{item.price}</p>
 
                     {item.stock === 0 && (
