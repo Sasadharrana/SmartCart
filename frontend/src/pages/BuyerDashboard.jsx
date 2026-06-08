@@ -343,7 +343,7 @@ export default function BuyerDashboard() {
                   <div key={product.id} className="bg-[#1e293b] p-4 rounded shadow">
 
                     <img
-                      src={`http://127.0.0.1:8000${product.image_url}`}
+                      src={`${import.meta.env.VITE_API_URL}${product.image_url}`}
                       alt={product.name}
                       className="h-40 w-full object-contain mb-4 cursor-pointer"
                       onClick={() => {
