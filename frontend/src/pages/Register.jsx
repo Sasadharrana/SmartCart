@@ -6,7 +6,6 @@ function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
     email: "",
     password: "",
     role: "buyer",
@@ -35,10 +34,6 @@ function Register() {
 
     setError("");
     setSuccess("");
-
-    if (!form.name.trim()) {
-      return setError("Name is required");
-    }
 
     if (!validateEmail(form.email)) {
       return setError("Invalid email format");
@@ -100,19 +95,6 @@ function Register() {
             {success}
           </p>
         )}
-
-        <input
-          type="text"
-          placeholder="Full Name"
-          className="w-full mb-3 p-2 border rounded"
-          value={form.name}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              name: e.target.value,
-            })
-          }
-        />
 
         <input
           type="email"
