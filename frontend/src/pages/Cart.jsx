@@ -148,7 +148,7 @@ export default function Cart() {
               >
                 <div className="flex gap-4 items-center">
                   <img
-                    src={`http://127.0.0.1:8000${item.image_url}`}
+                    src={`${import.meta.env.VITE_API_URL}${p.image_url}`}
                     className="w-20 h-20 object-cover rounded"
                     alt={item.product_name}
                   />

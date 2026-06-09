@@ -2,7 +2,7 @@ export default function ProductCard({ product, onAddToCart }) {
   return (
     <div className="bg-white shadow-md rounded-lg p-4 hover:shadow-xl transition">
       <img
-        src={`http://127.0.0.1:8000${product.image_url}`}
+         src={`${import.meta.env.VITE_API_URL}${p.image_url}`}
         alt={product.name}
         className="h-40 w-full object-cover rounded"
       />
