@@ -259,7 +259,7 @@ export default function SellerDashboard() {
                     <tr key={p.id} className="border-t border-[#334155]">
                       <td className="p-3 flex gap-3 items-center">
                         {p.image_url && (
-                          <img src={`http://127.0.0.1:8000${p.image_url}`} className="w-10 h-10 rounded" />
+                          <img src={`${import.meta.env.VITE_API_URL}${p.image_url}`} className="w-10 h-10 rounded" />
                         )}
                         {p.name}
                       </td>
